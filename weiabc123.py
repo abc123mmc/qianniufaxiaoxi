@@ -343,6 +343,12 @@ class weiExcel:
         '''传入num(第几行或列)，type1（类型hang或者其他）'''
         if type1=='hang':return self.sheet.row_values(num)#获取整行的值（数组）
         else:return self.sheet.col_values(num)#获取整列的值（数组）
+    def e_nrows_or_ncols(self):
+        '''返回并输出最大行数和列数'''
+        nrows = self.sheet.nrows#获取行数
+        ncols = self.sheet.ncols#获取列数
+        print('当前表格有：%s行,%s列'% (nrows,ncols))
+        return nrows,ncols
 #--------------------------------------------------------------------------------------------------------------------------------
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
