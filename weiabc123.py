@@ -14,8 +14,8 @@ import webbrowser#打开默认浏览器
 import pyautogui
 
 #--------------------------------------------------------------------------------------------------------------------------------
-class weiSearch_hotkey:# 自定义全局快捷键arg为数组或者列表[key1,key2]
-    def wei_start(self,*arg):
+class weiHotkey:# 自定义全局快捷键arg为数组或者列表[key1,key2]
+    def h_start(self,*arg):
         '''win32con.MOD_ALT[Alt键1];win32con.MOD_SHIFT[Shift键4];win32con.MOD_CONTROL[Ctrl键2];0x76[16进制F7键118]'''
         self.panDuan=0#用于终止指定热键，设置为热键值之后再按热键停止
         hotkey_id=5201203
@@ -38,18 +38,17 @@ class weiSearch_hotkey:# 自定义全局快捷键arg为数组或者列表[key1,k
                         print('热键%s被触发'% hotkey_id)
                         if self.panDuan:self.panDuan=0
                         else:self.panDuan=1
-#xianCheng().kaiShiXianCheng(search_hotkey,win32con.MOD_ALT,0x76)
 #--------------------------------------------------------------------------------------------------------------------------------
 class weiThreading:
-    def wei_start(self,fun,*args):
+    def t_start(self,fun,*args):
         '''传入函数名和参数，启动函数线程'''
         try:
             self.t1 = threading.Thread(target=lambda:fun(*args))
             self.t1.start()
         except:
             print('出错了,详情查看日志')
-            weiLog().wei_error('error_log')
-    def wei_close(self):
+            weiLog().l_error('error_log')
+    def t_close(self):
         '''终止线程'''
         xcid=self.t1.ident#线程id[线程标识符]
         ctypes.c_long(xcid)#tid对应的C中的类型，返回c_long(xcid)
@@ -67,66 +66,66 @@ class weiLog:
         '''传入文件名，初始化文件名和当前时间'''
         self.otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
         self.fn=fn
-    def wei_error(self):
+    def l_error(self):
         '''错误内容写入文件'''
         with open(self.fn,'a') as f:
             traceback.print_exc(file=f)
             f.write('**************'+self.otherStyleTime+'*************\n\n')
-    def wei_write(self,nr):
+    def l_write(self,nr):
         '''传入写入内容，写入内容到文件'''
         with open(self.fn,'a',encoding='UTF-8') as f:f.write(nr+'\n')
-    def wei_read(self):
+    def l_read(self):
         '''读取文件内容'''
         try:
             with open(self.fn,'r') as f:return f.readlines()
         except:pass#win32api.MessageBox(0,u'文件【%s】不存在'% self.fn, u'提醒',win32con.MB_OK)
 #--------------------------------------------------------------------------------------------------------------------------------
-class jiaMi_JieMi:#字符加密和解密
-    def jiaMi001(self,ziFu):
+class weiEncryptDecrypt:#字符加密和解密 Encrypt
+    def ed_encrypt(self,character):
         '''传入字符串，进行加密并返回'''
         '''先转为bytes，对转为bytes的字符串进行base64加密，然后在更改一位数字符'''
-        ziFu=ziFu.encode()
-        ziFu=base64.b64encode(ziFu)
-        ziFu=str(ziFu)[2:-1]
-        ziFu=ziFu.replace('=','#')
-        ziFu=list(ziFu)
-        ziFu.insert(2,'D')
-        ziFu=''.join(ziFu)
-        return ziFu        
-    def jieMi001(self,ziFu):
-        '''传入加密字符串，进行解密密并返回,函数jiaMi001反向操作'''
-        #print(ziFu)
-        ziFu=ziFu[:2]+ziFu[3:]
-        ziFu="b'%s'"%(ziFu)
-        ziFu=ziFu.replace('#','=')
-        ziFu=eval(ziFu)
-        ziFu=base64.b64decode(ziFu)
-        ziFu=ziFu.decode()
-        return ziFu
+        character=character.encode()
+        character=base64.b64encode(character)
+        character=str(character)[2:-1]
+        character=character.replace('=','#')
+        character=list(character)
+        character.insert(2,'D')
+        character=''.join(character)
+        return character        
+    def ed_decrypt(self,character):
+        '''传入加密字符串，进行解密密并返回,函数ed_encrypt反向操作'''
+        #print(character)
+        character=character[:2]+character[3:]
+        character="b'%s'"%(character)
+        character=character.replace('#','=')
+        character=eval(character)
+        character=base64.b64decode(character)
+        character=character.decode()
+        return character
 #--------------------------------------------------------------------------------------------------------------------------------
-class yanZheng:#验证
+class weiVerification:#验证
     def __init__(self,qianniuzhanghao=''):
         '''用于判断,因为__init__函数只能返回None,所以不能直接使用__init__函数'''
-        csh=weiConfig(r'.\cof\peizhi').wei_read('config','初始化')#获取初始化加密字符串
-        url=jiaMi_JieMi().jieMi001(csh)#解密初始化字符串
+        csh=weiConfig(r'.\cof\peizhi').c_read('config','初始化')#获取初始化加密字符串
+        url=weiEncryptDecrypt().ed_decrypt(csh)#解密初始化字符串
         self.req=requests.get(url).text
         self.req1=re.findall('```1(.*?)1```',self.req)[0]
         self.req1=self.req1.split(',')
         while '' in self.req1:
             self.req1.remove('')
         qianniuzhanghao=qianniuzhanghao.split(':')[0]#执行此句，全店版授权验证，不执行词句为个人版授权验证
-        if qianniuzhanghao:self.qjd=jiaMi_JieMi().jiaMi001(qianniuzhanghao)
+        if qianniuzhanghao:self.qjd=weiEncryptDecrypt().ed_encrypt(qianniuzhanghao)
 
-    def banBengYanZheng(self):
+    def v_version_verification(self):
         if self.qjd in self.req: return True
         else:
             win32api.MessageBox(0, '版本已更新，详情联系QQ1043014552',u'提示框',win32con.MB_SYSTEMMODAL)
             return False
-    def yanZheng(self):
+    def v_account_verification(self):
         for i in self.req1:
             if self.qjd in i:
                 self.req1=i.split('**')[1]
-                self.req1=jiaMi_JieMi().jieMi001(self.req1)
+                self.req1=weiEncryptDecrypt().ed_decrypt(self.req1)
                 self.req1=time.time()-int(self.req1)
                 if self.req1>=0:
                     win32api.MessageBox(0, '授权过期，如需授权联系QQ1043014552',u'提示框',win32con.MB_SYSTEMMODAL)
@@ -137,7 +136,7 @@ class yanZheng:#验证
                 else:return 1
         win32api.MessageBox(0,'填写的发送消息千牛帐号错误、未填写或者未授权，如需授权联系QQ1043014552',u'提示框',win32con.MB_SYSTEMMODAL)
         return 0
-    def wangZhi(self):#用默认浏览器打开百度搜索千牛发消息
+    def v_open_url(self):#用默认浏览器打开百度搜索千牛发消息
         webbrowser.open_new_tab('https://www.baidu.com/s?wd=http://www.51zhaoruanjian.com')
 #-------------------------------------------------------------------------------------------------------------------------------- 
 class weiShortcutKeys:
@@ -150,7 +149,7 @@ class weiShortcutKeys:
 #--------------------------------------------------------------------------------------------------------------------------------
 class weiHandleWindow:
     '''找子（孙）句柄，点击句柄坐标，句柄窗口到当前'''
-    def wei_childrenHandle(self,hwnd):  
+    def hw_childrenHandle(self,hwnd):  
         """传入句柄hwnd,返回其所有子句柄的列表"""  
         handle = win32gui.FindWindowEx(hwnd, 0, None, None)
         handlelist=[]
@@ -158,7 +157,7 @@ class weiHandleWindow:
             handlelist.append(handle)
             handle = win32gui.FindWindowEx(hwnd, handle, None, None)
         return handlelist
-    def wei_allHandle(self,hwnd,btlx=None):
+    def hw_allHandle(self,hwnd,btlx=None):
         """ 传入父窗口的句柄,和要查找的标题或者类型（默认为None），寻找父句柄下的所有子孙句柄 """  
         def find_idxSubHandle(hwnd,handlelist=[]):  
             handle = win32gui.FindWindowEx(hwnd, 0, None, None)
@@ -173,13 +172,13 @@ class weiHandleWindow:
         handlelist=[]
         find_idxSubHandle(hwnd,handlelist)
         return handlelist
-    def get_hnt(self,hwnd):
+    def hw_get_hnt(self,hwnd):
         """传入句柄，打印并返回句柄的类名和标题"""  
         title = win32gui.GetWindowText(hwnd)
         clsname = win32gui.GetClassName(hwnd)
         print(clsname,title)
         return clsname,title
-    def click_Handle(self,jb,wz=5,py_x=0,py_y=0,clicks=1,tp=1):
+    def hw_click_Handle(self,jb,wz=5,py_x=0,py_y=0,clicks=1,tp=1):
         '''传入jb句柄,wz位置,py_x便宜x,py_y偏移y,ds单双击,tp点击类型快慢, 按条件点击句柄'''
         left, top, right, bottom = win32gui.GetWindowRect(jb)
         if wz==5:x,y=int((left+right)/2),int((top+bottom)/2)
@@ -193,7 +192,7 @@ class weiHandleWindow:
             for i in range(clicks):
                 win32api.mouse_event(2,0,0,0,0)
                 win32api.mouse_event(4,0,0,0,0)
-    def wei_current(self,Frame1):
+    def hw_current(self,Frame1):
         '''激活窗口把焦点锁定到Frame1句柄的窗口上，第一句针对最小化的窗口'''
         win32gui.ShowWindow(Frame1,win32con.SW_SHOWNORMAL)
         import pythoncom
@@ -215,17 +214,17 @@ class weiConfig:
         open(self.file_path_name,'wb').write(bytes(content, encoding='utf-8'))
         self.config=configparser.ConfigParser()
         self.config.read(self.file_path_name,encoding='UTF-8')#读文件
-    def wei_read(self,Section,Key):
+    def c_read(self,Section,Key):
         '''传入项(Section)和键(Key),查询值(value)'''
         return self.config[Section][Key]
-    def wei_change(self,Section,dict1):
+    def c_change(self,Section,dict1):
         '''传入项(Section)和字典(dict1)，进行增和修改'''
         for i in dict1:
             try:self.config.add_section(Section)
             except:pass
             self.config[Section][i]=dict1[i]
         with open(self.file_path_name,'w',encoding='UTF-8') as f:self.config.write(f)
-    def wei_del(self,Section,Key):
+    def c_del(self,Section,Key):
         '''传入项(Section)和键(Key)，进行删除'''
         self.config.remove_option(Section,Key) #删除一个配置项
         with open(self.file_path_name,'w',encoding='UTF-8') as f:self.config.write(f)
@@ -235,7 +234,7 @@ import win32gui,win32ui,win32con, win32api
 import cv2,numpy,aircv
 class weiMatchImg:
     '''截屏,比对图片位置'''
-    def wei_window_capture(self,filename):
+    def mi_window_capture(self,filename):
         '''传入保存文件名，截屏并保存'''
         hwnd = 0 # 窗口的编号，0号表示当前活跃窗口
         hwndDC = win32gui.GetWindowDC(hwnd)# 根据窗口句柄获取窗口的设备上下文DC（Divice Context）
@@ -249,7 +248,7 @@ class weiMatchImg:
         saveDC.SelectObject(saveBitMap)# 高度saveDC，将截图保存到saveBitmap中
         saveDC.BitBlt((0, 0), (w, h), mfcDC, (0, 0), win32con.SRCCOPY)# 截取从左上角（0，0）长宽为（w，h）的图片
         saveBitMap.SaveBitmapFile(saveDC, filename)
-    def wei_matchImg(self,imgobj,imgsrc,confidence=0.5):
+    def mi_matchImg(self,imgobj,imgsrc,confidence=0.5):
             '''传入小图、大图、相似度[confidence],返回小图所在大图的坐标'''
             '''imdecode以二进制流方式读取图片[numpy解决编码问题，避免中文出错]，通过aircv比对两图'''
             imobj = cv2.imdecode(numpy.fromfile(imgobj,dtype=numpy.uint8),-1)
@@ -271,15 +270,15 @@ class weiSqlite3:
     def __init__(self,path):
         self.conn = sqlite3.connect(path)#连接数据库，不存在则创建
         self.cursor = self.conn.cursor()#创建游标
-    def wei_addDelUpd(self,*sql):
+    def s_add_del_dpd(self,*sql):
         '''创建表、添加数据、删除、修改'''
         self.cursor.execute(*sql)
         self.conn.commit()#保存操作
-    def wei_sel(self,*sql):
+    def s_sel(self,*sql):
         '''查询数据'''
         #return [i for i in self.cursor.execute(*sql)]
         return self.cursor.execute(*sql).fetchall()
-    def wei_sql01(self,tb_name,li):
+    def s_sql(self,tb_name,li):
         '''传入表名和字段名，返回创建表格的sql语句'''
         sql="create table '%s' ('%s' primary key not null default '',"%(tb_name,li[0])
         for i in range(1,len(li)-1):
@@ -297,13 +296,13 @@ class weiMysql():
         self.cur.execute(sql)#建库
         sql="use %s;"% dataBase
         self.cur.execute(sql)#使用库
-    def wei_addDelUpd(self,*sql):
+    def m_add_del_upd(self,*sql):
         self.cur.execute(*sql)
         self.con.commit()#提交
-    def wei_sel(self,*sql):
+    def m_sel(self,*sql):
         self.cur.execute(*sql)
         return self.cur.fetchall()
-    def wei_sql01(self,tb_name,li):
+    def m_sql(self,tb_name,li):
         sql='''create table %s (%s char(50) primary key,'''%(tb_name,li[0])
         for j in range(1,len(li)-1):
             sql+=li[j]+' varchar(600) default "",'
@@ -328,33 +327,30 @@ class weiExcel:
         self.sheet = self.workbook.sheet_by_name(sheet_name)
     def e_write(self,DataList=None,Header=None):
         if DataList is None:DataList = []
-        rowNum = self.sheet.nrows
-        colNum = self.sheet.ncols
+        self.e_nrows_or_ncols()
         newbook = copy(self.workbook)
         newsheet = newbook.get_sheet(self.sheet_name)
-        if colNum==rowNum==0:
+        if self.ncols==self.nrows==0:
             for i in range(len(Header)):newsheet.write(0,i,Header[i])
-            rowNum+=1
-        for i in range(len(DataList)):newsheet.write(rowNum,i,DataList[i])# 在末尾增加新行
+            self.nrows+=1
+        for i in range(len(DataList)):newsheet.write(self.nrows,i,DataList[i])# 在末尾增加新行
         newbook.save(self.filename)# 覆盖保存
         self.workbook = xlrd.open_workbook(self.filename, formatting_info=True)
         self.sheet = self.workbook.sheet_by_name(self.sheet_name)
     def e_read(self,num=0,type1='hang'):
         '''传入num(第几行或列)，type1（类型hang或者其他）'''
-        if type1=='hang':return self.sheet.row_values(num)#获取整行的值（数组）
-        else:return self.sheet.col_values(num)#获取整列的值（数组）
+        if type1=='hang':return self.sheet.row_values(num)#获取整行数据
+        else:return self.sheet.col_values(num)#获取整列数据
     def e_nrows_or_ncols(self):
-        '''返回并输出最大行数和列数'''
-        nrows = self.sheet.nrows#获取行数
-        ncols = self.sheet.ncols#获取列数
-        print('当前表格有：%s行,%s列'% (nrows,ncols))
-        return nrows,ncols
+        '''定义刷新最大行数和列数'''
+        self.nrows = self.sheet.nrows#获取行数
+        self.ncols = self.sheet.ncols#获取列数
 #--------------------------------------------------------------------------------------------------------------------------------
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 class weiSelenium:
     '''Selenium启动、验证是否为本公司店铺'''
-    def wei_run_driver(self):
+    def s_run_driver(self):
         #option = webdriver.ChromeOptions()
         #option.add_argument('disable-infobars')
         #option.add_argument("user-data-dir=C:/Users/Administrator/AppData/Local/Google/Chrome/User Data")#设置成用户自己的数据目录
@@ -363,7 +359,7 @@ class weiSelenium:
         self.driver.get('https://login.taobao.com/member/login.jhtml')
         self.driver.maximize_window()
         ctypes.windll.user32.MessageBoxW(0, '初始化成功，请登陆账号进行后续操作','提示',0)
-    def wei_verification():
+    def s_verification():
         '''验证是否为本公司店铺，是返回True，不是返回False'''
         li111=['七匹狼箱包旗舰店','septwolves美之瑞专卖店','七匹狼雅赋专卖店','SEPTWOLVES雅赋专卖店',
         '少年狼箱包','拼多多美之瑞专卖店','京东七匹狼雅赋专卖店','自然之名旗舰店','evm旗舰店',
@@ -377,29 +373,33 @@ class weiSelenium:
             return False
         else:return True
 #--------------------------------------------------------------------------------------------------------------------------------
-import os.path
+import chardet
 class weiBigFileRead:#大文件读取
-    def wbfr_read(self,filename,zijie):
-        '''传入文件名和字节数，返回倒数的字节数'''
-        if os.path.isfile(filename):
-            with open(filename,'rb') as f:
-                b=f.seek(0,2)
-                if b>zijie:f.seek(b-zijie,0)
-                else:f.seek(0,0)
-                z=f.read()
-                z=z[z.index(b'\n'):]
-                return z.decode('utf-8')
-        else:
-            print('文件名不存在')
+    def bfr_read(self,filename,zijie=500):
+        '''传入文件名初始文件对象以及其字节数'''
+        try:
+            with open(filename,'rb') as self.f:
+                self.f_len=self.f.seek(0,2)
+                '''传入字节数，将文件对象的指针移动到倒数指定的字节数位置'''
+                if self.f_len>zijie:self.f.seek(self.f_len-zijie,0)
+                else:self.f.seek(0,0)
+                '''读取指针移动后的文件对象的内容'''
+                str1=self.f.read()
+                encoding=chardet.detect(str1)['encoding']#返回字符的编码类型
+                if encoding: return str1.decode(encoding,'ignore')
+                else: return str1.decode('gbk','ignore')
+        except:
+            print('文件：%s不存在'% filename)
             return ''
+            
 #--------------------------------------------------------------------------------------------------------------------------------
 if __name__=="__main__":
     #http://bbs.duowan.com/forum.php?mod=viewthread&tid=46820177
     #banBengYanZheng0=yanZheng('试用版20181020').banBengYanZheng()
-    jiaMi_JieMi1=jiaMi_JieMi()
-    print('加密1',jiaMi_JieMi1.jiaMi001('http://bbs.duowan.com/forum.php?mod=viewthread&tid=46820177'))
-    print('加密2',jiaMi_JieMi1.jiaMi001(str(int(time.time())+3600*24*360)))
-    print('解密',jiaMi_JieMi1.jieMi001('54DmI5pys6aqM6K+BMjAxOTA5MDc#'))
+    crypt=weiEncryptDecrypt()
+    print('帐号加密',crypt.ed_encrypt('路易科林'))
+    print('时间加密',crypt.ed_encrypt(str(int(time.time())+3600*24*360/24/360/2)))
+    print('解密',crypt.ed_decrypt('aHDR0cDovL2Jicy5kdW93YW4uY29tL2ZvcnVtLnBocD9tb2Q9dmlld3RocmVhZCZ0aWQ9NDY4MjAxNzc#'))
     #juBingChuangKou().dangqian(132730)
     
 
@@ -418,8 +418,8 @@ if __name__=="__main__":
     a001=a001
     b01=[i.split('**') for i in a001]
     for i in b01:
-        dianm=jiaMi_JieMi1.jieMi001(i[0])
-        shij=jiaMi_JieMi1.jieMi001(i[1])
+        dianm=crypt.ed_decrypt(i[0])
+        shij=crypt.ed_decrypt(i[1])
         ee=float(shij)
         if ee>time.time():
             shij=time.localtime(ee)
@@ -431,9 +431,7 @@ if __name__=="__main__":
 
 
 
-
-
-
+#```15LDiD5Yy554u8566x5YyF5peX6Iiw5bqX**MTDU3MDg1NTI5Ng##,6IDeq54S25LmL5ZCN5peX6Iiw5bqX**MTDU5MDM4MTA0OA##,6ZDqG56yb55S15Zmo5LiT6JCl5bqX**MTDU5NTMyMzA2MQ##,5aD6J5aic6IuP6ZqQ5b2i55y86ZWc5a6Y5pa55peX6Iiw5bqX**MTDU3OTg3MTQ3Ng##,5LDiD5Yy554u86ZuF6LWL5LiT5Y2W5bqX**MTDU5MTE1NTMxOQ##,NzDNob3Vyc+aXl+iIsOW6lw##**MTDU3MzUzMzk0MA##,6bDqC57+U5peX6Iiw5bqX**MTDU3MzU2MTk0MQ##,5LDyK5Y2h6I6x5bGF5a625pel55So5LiT6JCl5bqX**MTDU3NDMxOTM5MQ##,bHDVja3nml5foiLDlupc#**MTDU4ODIwNDAyNA##,5rDi45oiPOA##**MTDU3OTMzNDc1MA##,54Dix5py65pWw56CB5LiT6JCl5bqX**MTDU4OTAzNzg0OQ##,dXDRlbmHkvZHlpKnlhbDml5foiLDlupc#**MTDU3MDg2MTI4OQ##,dXDRlbmHkvZHlpKnlhbDmtbflpJbml5foiLDlupc#**MTDU3MDg2MTYwMA##,ZXDZt5peX6Iiw5bqX**MTDU4ODIwNDAyNA##,c3DZhcmV55YWs6aaG**MTDU3ODkxMjkyMA##,dmDFuY2zlh6HlrqLor5rlk4Hml5foiLDlupc#**MTDU4MjA4OTU3Nw##,5rDGJ6IuR6Imv5pa55rW35bed5LiT5Y2W5bqX**MTDU4NjY3MTExMw##,bWDFzdHJvemF2YXR0aeaXl+iIsOW6lw##**MTDU4OTk5MzQ1MA##,bmDVvY291bGVy6ZqQ5b2i55y86ZWc5peX6Iiw5bqX**MTDU3MTEwNTkyNw##,5LDiD5Yy554u856em5Yqf5LiT5Y2W5bqX**MTDU3MTk5NDgzOA##,cGDVkaWFraWTmtbflpJbml5foiLDlupc65r2Y5aSa5ouJ**MTDU3MDA3MTQyMA##,6LDev5piT56eR5p6X5pav5peX6Iiw5bqXOuWGrOWGrA##**MTDU2ODcxNjA2My4w,,,,,,,,,,,,,,,,,,,,,,,,54DmI5pys6aqM6K+BMjAxOTA5MDc#1```
 
 
 

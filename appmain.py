@@ -1,17 +1,22 @@
+##import sys
+##from sys import path
+##path.append(r'D:\weiabc123')  # 添加路径
+import weiabc123
+
+
 from tkinter import * #界面
 import pyautogui#模拟鼠标键盘操作
 import time#时间模块
-import weiabc123
 import sendmsg
 pyautogui.FAILSAFE = False
 
 
 class jieMian(sendmsg.qianniu):
     def __init__(self):
-        banBengYanZheng0=weiabc123.yanZheng('版本验证20190907').banBengYanZheng()
+        banBengYanZheng0=weiabc123.weiVerification('版本验证20190907').v_version_verification()
         if not banBengYanZheng0:
             return
-        weiabc123.weiThreading().wei_start(self.runabc)#通过版本验证即运行界面
+        weiabc123.weiThreading().t_start(self.runabc)#通过版本验证即运行界面
         super().__init__()
         self.xianCheng=weiabc123.weiThreading()#调用weiabc123下的xianCheng类
     def runabc(self):        
@@ -32,7 +37,7 @@ class jieMian(sendmsg.qianniu):
         self.Label4=Label(self.root,text=text,padx=0,anchor = 'nw',font = ('', '10'),
                      foreground = '#080808',wraplength = 246,justify= 'left')
         self.Label4.place(x=270,y=30,width=246,height=180)
-        text=weiabc123.weiConfig(r'cof\peizhi').wei_read('config','发送内容')
+        text=weiabc123.weiConfig(r'cof\peizhi').c_read('config','发送内容')
         self.Text1=Text(self.root,padx=0,font = ('', '10'),foreground = '#080808')
         self.Text1.place(x=10,y=30,width=246,height=180)
         
@@ -40,7 +45,7 @@ class jieMian(sendmsg.qianniu):
         self.Entry1_1=StringVar()
         self.Entry1=Entry(self.root,textvariable=self.Entry1_1,font = ('', '10'))
         self.Entry1.place(x=100, y=224,width=300,height=16)
-        self.Entry1_1.set(weiabc123.weiConfig(r'.\cof\peizhi').wei_read('config','发送帐号'))
+        self.Entry1_1.set(weiabc123.weiConfig(r'.\cof\peizhi').c_read('config','发送帐号'))
 
         self.Text1.bind("<Enter>", self.jingRu)#绑定事件
         self.Text1.bind("<Leave>", self.yiChu)
@@ -82,10 +87,15 @@ class jieMian(sendmsg.qianniu):
                 else:self.a021.panDuan=1
         except:
             self.fxx1=1
-            self.xianCheng.wei_start(self.Control)
+            self.xianCheng.t_start(self.start_control)
+
+    def start_control(self):
+        try:self.main()
+        except:weiabc123.weiLog(r'.\cof\error_log').l_error()
+        self.jieShu()
 
     def jieShu(self):
-        '''线程'''
+        '''结束退出'''
         self.a021.panDuan='out'
         pyautogui.hotkey('altleft','F7')
         self.root.quit()
@@ -96,19 +106,17 @@ class jieMian(sendmsg.qianniu):
         qianniuzhanghao=qianniuzhanghao.replace('\n','')#去除换行
         fslr001=self.Text1.get('1.0',END)
         xr=weiabc123.weiConfig(r'.\cof\peizhi')
-        xr.wei_change('config',{'发送内容':fslr001,'发送帐号':qianniuzhanghao})
-        xr.wei_change('config',{'发送内容':fslr001,'发送内容':fslr001})
+        xr.c_change('config',{'发送内容':fslr001,'发送帐号':qianniuzhanghao})
+        xr.c_change('config',{'发送内容':fslr001,'发送内容':fslr001})
         
 if __name__=="__main__":
-    try:
-        jieMian01=jieMian()
-        try:jieMian01.root.quit()
-        except:pass
-    except:weiabc123.weiLog(r'.\cof\error_log').wei_error()
+    jieMian01=jieMian()
 
 
-
-
+#『函数』 高内聚：尽可能类的每个成员方法只完成一件事（最大限度的聚合）
+#『函数』 低耦合：减少类内部，一个成员方法调用另一个成员方法
+#『类』高内聚低耦合：减少类内部，对其他类的调用
+#『功能块』 减少模块之间的交互复杂度（接口数量，参数数据）
 
 
 
