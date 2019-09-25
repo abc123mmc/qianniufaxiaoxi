@@ -102,7 +102,7 @@ class qianniu:
         jq1=''.join(re.findall('[\u2E80-\u9FFF]',jianqie1))
         if h1 in jq1 and self.jzcffs:
             shibai='%s			网络延时未加载、已经发送过类似消息或者旺旺不存在'%(self.dangQianWangWang)
-            weiabc123.weiLog('发送日志.txt').w_write(shibai)
+            weiabc123.weiLog('发送日志.txt').l_write(shibai)
             return
 
         win32gui.SendMessage(self.xxsrkjb, win32con.WM_SETTEXT, None,self.huinr01)
