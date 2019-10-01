@@ -76,7 +76,7 @@ class jieMian(sendmsg.qianniu):
         
     def dianJi(self,event):
         '''跳转到网站'''
-        weiabc123.yanZheng().wangZhi()
+        weiabc123.weiVerification().v_open_url()
 
     def kaishiFaXiaoXi(self):
         '''线程'''
