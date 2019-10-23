@@ -13,13 +13,14 @@ pyautogui.FAILSAFE = False
 
 class jieMian(sendmsg.qianniu):
     def __init__(self):
-        banBengYanZheng0=weiabc123.weiVerification('版本验证20190907').v_version_verification()
+        banBengYanZheng0=weiabc123.weiVerification().v_version_verification()
         if not banBengYanZheng0:
             return
         weiabc123.weiThreading().t_start(self.runabc)#通过版本验证即运行界面
         super().__init__()
         self.xianCheng=weiabc123.weiThreading()#调用weiabc123下的xianCheng类
-    def runabc(self):        
+
+    def runabc(self):
         self.root =Tk()
         self.root.title("千牛批量自动发消息")#标题
         self.root.geometry("523x257+600+250")#参数'600x600'是x 不是*,“无参数默认是撑开.横x纵+左边距+上边距”

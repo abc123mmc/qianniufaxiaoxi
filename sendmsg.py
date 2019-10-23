@@ -126,7 +126,7 @@ class qianniu:
                 win32api.MessageBox(0, 'bgs应用已更新，或者配置错误，详情联系开发者QQ：1043014552',u'提示框',win32con.MB_SYSTEMMODAL)
                 return 1
         else:
-            yanZheng009=weiabc123.weiVerification(self.qianniuzhanghao).v_account_verification()
+            yanZheng009=weiabc123.weiVerification().v_account_verification(self.qianniuzhanghao)
             if not yanZheng009 : return 1
         titlename =self.qianniuzhanghao+' - 接待中心'
         try:self.biaoge=xlrd.open_workbook(r'旺旺名.xls').sheets()[0]#接收消息的旺旺表
