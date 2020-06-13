@@ -39,6 +39,7 @@ def get_path(wangwangming):
         l=[i for i in iterfindfiles(j, "topuser.xml") if wangwangming in i]
         li+=l
     print(f'获取耗时{time.time()-t}秒')
+
     return li[0]
 
 def get_data(path):
@@ -53,7 +54,7 @@ def get_data(path):
 def write_txt(text1,text0,file_name='标星用户.txt'):
     for i in  text1:
         if i[1]=='1':
-        with open(file_name,'a') as ff:ff.write(text0[i][0]+'\n')
+        with open(file_name, 'a') as ff:ff.write(text0[i][0]+'\n')
 
 def main():
     try:
