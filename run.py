@@ -30,6 +30,7 @@ def iterfindfiles(path, filename):
             li +=[os.path.join(root, filename)]
     return li
 
+# 备注
 def get_path(wangwangming):
     t=time.time()
     b=[chr(i) + ':' for i in range(65,91) if os.path.isdir(chr(i) + ':')]
@@ -53,7 +54,7 @@ def get_data(path):
 def write_txt(text1,text0,file_name='标星用户.txt'):
     for i in  text1:
         if i[1]=='1':
-        with open(file_name,'a') as ff:ff.write(text0[i][0]+'\n')
+            with open(file_name,'a') as ff:ff.write(text0[i][0]+'\n')
 
 def main():
     try:
